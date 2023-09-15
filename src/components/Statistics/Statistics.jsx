@@ -4,11 +4,10 @@ import { StyledList, Text } from './Statistics.styled';
 import { strCapitalize } from 'App';
 
 const Statistics = ({ stats, total, positivePercentage }) => {
-  const statsArr = Object.entries(stats);
   return (
     <>
       <StyledList>
-        {statsArr.map(([key, value], idx) => (
+        {stats.map(([key, value], idx) => (
           <li key={idx}>
             <span>{strCapitalize(key)}: </span>
             <span>{value}</span>
@@ -28,7 +27,7 @@ const Statistics = ({ stats, total, positivePercentage }) => {
 };
 
 Statistics.propTypes = {
-  stats: PropTypes.object.isRequired,
+  stats: PropTypes.array.isRequired,
   total: PropTypes.func,
   positivePercentage: PropTypes.func,
 };

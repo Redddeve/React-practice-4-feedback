@@ -3,59 +3,71 @@ import { Notification } from 'components/Notification/Notification';
 import { Section } from 'components/Section/Section';
 import Statistics from 'components/Statistics/Statistics';
 
-import React, { Component } from 'react';
+import React, { useState } from 'react';
 import { Wrapper } from 'styles/App.styled';
 
-export default class App extends Component {
-  state = {
-    good: 0,
-    neutral: 0,
-    bad: 0,
-  };
+const App = () => {
+  const [good, setGood] = useState(0);
+  const [neutral, setNeutral] = useState(0);
+  const [bad, setBad] = useState(0);
 
-  onButtonClick = e => {
+  const onButtonClick = e => {
     const stateName = e.target.name;
-    this.setState(prev => ({
-      [stateName]: prev[stateName] + 1,
-    }));
+    switch (stateName) {
+      case 'good':
+        setGood(prev => prev + 1);
+        break;
+
+      case 'neutral':
+        setNeutral(prev => prev + 1);
+        break;
+
+      case 'bad':
+        setBad(prev => prev + 1);
+        break;
+
+      default:
+        console.error('Nothing');
+        break;
+    }
   };
 
-  countTotalFeedback = () => {
-    const { good, neutral, bad } = this.state;
+  const countTotalFeedback = () => {
     return good + neutral + bad;
   };
 
-  countPositiveFeedbackPercentage = () => {
-    return this.countTotalFeedback() === 0
+  const countPositiveFeedbackPercentage = () => {
+    return countTotalFeedback() === 0
       ? 0
-      : Math.round((this.state.good / this.countTotalFeedback()) * 100);
+      : Math.round((good / countTotalFeedback()) * 100);
   };
 
-  render() {
-    const stateData = Object.keys(this.state);
-    return (
-      <Wrapper>
-        <Section title={'Please leave feedback'}>
-          <FeedbackOptions
-            options={stateData}
-            onLeaveFeedback={this.onButtonClick}
+  const stateData = { good, neutral, bad };
+
+  return (
+    <Wrapper>
+      <Section title={'Please leave feedback'}>
+        <FeedbackOptions
+          options={Object.keys(stateData)}
+          onLeaveFeedback={onButtonClick}
+        />
+      </Section>
+      <Section title="Statistics">
+        {countTotalFeedback() === 0 ? (
+          <Notification message="There is no feedback" />
+        ) : (
+          <Statistics
+            stats={Object.entries(stateData)}
+            total={countTotalFeedback}
+            positivePercentage={countPositiveFeedbackPercentage}
           />
-        </Section>
-        <Section title={'Statistics'}>
-          {this.countTotalFeedback() === 0 ? (
-            <Notification message="There is no feedback" />
-          ) : (
-            <Statistics
-              stats={this.state}
-              total={this.countTotalFeedback}
-              positivePercentage={this.countPositiveFeedbackPercentage}
-            />
-          )}
-        </Section>
-      </Wrapper>
-    );
-  }
-}
+        )}
+      </Section>
+    </Wrapper>
+  );
+};
+
+export default App;
 
 export function strCapitalize(str) {
   return str.charAt(0).toUpperCase() + str.slice(1);
